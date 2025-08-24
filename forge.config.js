@@ -2,6 +2,7 @@ const { MakerSquirrel } = require('@electron-forge/maker-squirrel');
 const { MakerZIP } = require('@electron-forge/maker-zip');
 const { MakerDeb } = require('@electron-forge/maker-deb');
 const { MakerRpm } = require('@electron-forge/maker-rpm');
+const { MakerDMG } = require('@electron-forge/maker-dmg');
 
 const path = require('path');
 const fse = require('fs-extra');
@@ -23,9 +24,15 @@ module.exports = {
       setupExe: 'TiktokReplyBotInstaller.exe',
       noMsi: true,
     }),
+    new MakerDMG({
+      name: 'TiktokReplyBotApp',
+      overwrite: true,
+      format: 'ULFO'
+    }),
     new MakerZIP({}, ['darwin']),
     new MakerRpm({}),
     new MakerDeb({}),
+    
   ],
   plugins: [],
   hooks: {
