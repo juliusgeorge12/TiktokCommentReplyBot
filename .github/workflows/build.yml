@@ -55,4 +55,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: TiktokCommentReplyBot-mac
-          path: out/make/**
+          path: out/make
