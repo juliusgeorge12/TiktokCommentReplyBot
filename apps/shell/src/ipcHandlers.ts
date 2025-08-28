@@ -110,13 +110,14 @@ export function registerIpcHandlers() {
   
   ipcMain.handle('video:fetch', async (_event, hashtagId: number, maxVideos: number) => {
     let hashtag = (await HashTagService.getHashtagById(hashtagId))?.text ?? 'funnycats';
-    const max_auto_find_videos = (await SettingService.getSetting()).max_auto_find_videos;
+    const setting = await SettingService.getSetting();
+    const max_auto_find_videos = setting.max_auto_find_videos;
     maxVideos = maxVideos >= max_auto_find_videos ? max_auto_find_videos : maxVideos;
     //remove the # from the beginining of the hashtag
     if (typeof hashtag === 'string' && hashtag.startsWith('#')) {
       hashtag = hashtag.slice(1);
     }
-    return await fetchVideo(hashtag, maxVideos);
+    return await fetchVideo(hashtag, maxVideos, setting.run_in_background ?? true);
   });
 
   ipcMain.handle('pending-videos:approve', async (_event, id: any) => {
