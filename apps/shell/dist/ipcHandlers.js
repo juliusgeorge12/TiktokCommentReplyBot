@@ -88,13 +88,14 @@ function registerIpcHandlers() {
     });
     electron_1.ipcMain.handle('video:fetch', async (_event, hashtagId, maxVideos) => {
         let hashtag = (await core_1.HashTagService.getHashtagById(hashtagId))?.text ?? 'funnycats';
-        const max_auto_find_videos = (await core_1.SettingService.getSetting()).max_auto_find_videos;
+        const setting = await core_1.SettingService.getSetting();
+        const max_auto_find_videos = setting.max_auto_find_videos;
         maxVideos = maxVideos >= max_auto_find_videos ? max_auto_find_videos : maxVideos;
         //remove the # from the beginining of the hashtag
         if (typeof hashtag === 'string' && hashtag.startsWith('#')) {
             hashtag = hashtag.slice(1);
         }
-        return await (0, fetchVideo_1.fetchVideo)(hashtag, maxVideos);
+        return await (0, fetchVideo_1.fetchVideo)(hashtag, maxVideos, setting.run_in_background ?? true);
     });
     electron_1.ipcMain.handle('pending-videos:approve', async (_event, id) => {
         return await core_1.VideoService.approvePendingVideo(id);

@@ -4,7 +4,7 @@ exports.fetchVideo = fetchVideo;
 const core_1 = require("../../../../packages/core");
 const shared_1 = require("../../../../packages/shared");
 const waitForNewItems_1 = require("./waitForNewItems");
-async function fetchVideo(hashtag, maxVideos) {
+async function fetchVideo(hashtag, maxVideos, runInBackground = true) {
     let browser = null;
     try {
         const Bot = await core_1.BotService.getIdleBot();
@@ -12,7 +12,7 @@ async function fetchVideo(hashtag, maxVideos) {
             throw new Error(`No active bot available kindly activate a bot first`);
         }
         const profile = (0, shared_1.getChromeProfile)(core_1.BotService.getBotProfileName(Bot.id));
-        browser = await (0, shared_1.BrowserLauncher)(profile, true);
+        browser = await (0, shared_1.BrowserLauncher)(profile, runInBackground);
         const Pages = await browser.pages();
         const Page = Pages.length > 0 ? Pages[0] : await browser.newPage();
         const defaultUA = await Page.browser().userAgent();

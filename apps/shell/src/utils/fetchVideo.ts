@@ -3,7 +3,7 @@ import { Browser, ChromeProfile, BrowserLauncher, getChromeProfile, sleep, logge
 import type { ElementHandle } from "puppeteer";
 import { waitForNewItems } from './waitForNewItems';
 
-export async function fetchVideo(hashtag: string, maxVideos: number) {
+export async function fetchVideo(hashtag: string, maxVideos: number, runInBackground: boolean = true) {
     let browser: Browser | null = null;
     try {
         const Bot: BotAccount | undefined = await BotService.getIdleBot();
@@ -12,7 +12,7 @@ export async function fetchVideo(hashtag: string, maxVideos: number) {
         }
 
         const profile: ChromeProfile = getChromeProfile(BotService.getBotProfileName(Bot.id));
-        browser = await BrowserLauncher(profile, true);
+        browser = await BrowserLauncher(profile, runInBackground);
         const Pages = await browser.pages();
         const Page = Pages.length > 0 ? Pages[0] : await browser.newPage();
         const defaultUA = await Page.browser().userAgent();
