@@ -37,11 +37,16 @@ module.exports = {
   plugins: [],
   hooks: {
     postPackage: async (forgeConfig, options) => {
-      const outputDir = options.outputPaths[0];
-
-      const destination = path.join(outputDir, 'resources', 'daemon', 'bin');
+      let outputDir = options.outputPaths[0];
+      //here check if the platform is mac or windows
+      if (process.platform === 'darwin') {
+        outputDir = path.join(outputDir, 'TiktokReplyBot.app', 'Contents', 'Resources')
+      } else if (process.platform === 'win32') {
+        outputDir = path.join(outputDir, 'resources');
+      }
+      const destination = path.join(outputDir, 'daemon', 'bin');
       const includeSource = path.resolve(__dirname, 'includes');
-      const includeDestination = path.join(outputDir, 'resources', 'includes');
+      const includeDestination = path.join(outputDir, 'includes');
       const source = path.resolve(__dirname, 'apps/bin');
 
       console.log(`[postPackage] Copying daemon binaries from ${source} to ${destination}`);

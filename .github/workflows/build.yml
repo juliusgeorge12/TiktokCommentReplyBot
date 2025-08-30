@@ -48,6 +48,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: copy sqlite3 files to includes
+        run: |
+          mkdir -p includes/node_modules
+          cp -R node_modules/sqlite3 includes/node_modules/
+          cp -R node_modules/sqlite3/build includes/
+          cp -R includes apps/bin/
+          cp -R node_modules/sqlite3 apps/bin/node_modules/
+
       - name: Build for macOS
         run: npm run make-mac:all
 
@@ -56,8 +64,3 @@ jobs:
         with:
           name: TiktokCommentReplyBot-mac-out
           path: out
-      - name: Upload macOS sqlite3 module
-        uses: actions/upload-artifact@v4
-        with:
-          name: sqlite3-macos
-          path: node_modules/sqlite3
