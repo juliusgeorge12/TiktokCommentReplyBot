@@ -1,5 +1,4 @@
 const { MakerSquirrel } = require('@electron-forge/maker-squirrel');
-const { MakerZIP } = require('@electron-forge/maker-zip');
 const { MakerDeb } = require('@electron-forge/maker-deb');
 const { MakerRpm } = require('@electron-forge/maker-rpm');
 const { MakerDMG } = require('@electron-forge/maker-dmg');
@@ -29,7 +28,6 @@ module.exports = {
       overwrite: true,
       format: 'ULFO'
     }),
-    new MakerZIP({}, ['darwin']),
     new MakerRpm({}),
     new MakerDeb({}),
     
@@ -46,7 +44,7 @@ module.exports = {
       }
       const destination = path.join(outputDir, 'daemon', 'bin');
       const includeSource = path.resolve(__dirname, 'includes');
-      const includeDestination = path.join(outputDir, 'includes');
+      const includeDestination =  path.join(outputDir, 'includes');
       const source = path.resolve(__dirname, 'apps/bin');
 
       console.log(`[postPackage] Copying daemon binaries from ${source} to ${destination}`);
