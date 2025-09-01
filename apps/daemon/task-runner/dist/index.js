@@ -126,7 +126,6 @@ function setupGracefulExit() {
     };
     process.on("SIGINT", stop);
     process.on("SIGTERM", stop);
-    process.on("SIGKILL", stop);
     process.on("unhandledRejection", (err) => {
         shared_1.logger.error("Unhandled rejection:", 'task-runner', err);
         stop();
