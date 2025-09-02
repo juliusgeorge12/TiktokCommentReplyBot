@@ -42,7 +42,7 @@ export async function activateBot(botId: number) {
       await Page.waitForSelector('button[data-e2e="login-button"]:not([disabled])', { timeout: 10000 });
       // Click login
       await Page.click('button[data-e2e="login-button"]');
-
+      await Page.waitForNavigation({timeout: 0});
       let hasLoggedIn = await Page.evaluate(() => {
         return document.cookie.includes('sessionid=');
       });

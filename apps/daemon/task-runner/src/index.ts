@@ -64,15 +64,18 @@ async function startTaskRunnerLoop(interval: number = 60) {
                             try {
                                 await replyComment(Page, setting, video.link);
                             } catch (error) {
-                                const banModal = await Page.$('div:has-text("Account banned")');
-                                if (banModal) {
-                                    ActivityService.addActivity(
-                                        {
-                                            description: 'Error commenting on video the bot account ' + Bot.name + ' has been banned',
-                                            video_link: video.link,
-                                            status: 'success'
-                                        }
-                                    );
+                                const banDetected = await Page.evaluate(() => {
+                                const text = document.body.innerText.toLowerCase();
+                                const keywords = ['account banned', 'suspended', 'violated our community guidelines'];
+                                    return keywords.some(keyword => text.includes(keyword));
+                                });
+
+                                if (banDetected) {
+                                    ActivityService.addActivity({
+                                        description: `Error commenting on video: the bot account ${Bot.name} has been banned`,
+                                        video_link: video.link,
+                                        status: 'success'
+                                    });
                                     await BotService.updateBotHealth(Bot.id, 'banned');
                                 } else {
                                     // More reliably, check the entire page content for keywords

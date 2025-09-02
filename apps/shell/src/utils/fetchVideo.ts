@@ -24,6 +24,7 @@ export async function fetchVideo(hashtag: string, maxVideos: number, runInBackgr
         if (!contentChallenge) {
             throw new Error('Content challenge not found.');
         }
+        await Page.waitForSelector('div[data-e2e="challenge-item-list"]', {timeout: 20000});
         const challengeItemList = await contentChallenge.$('div[data-e2e="challenge-item-list"]');
         if (!challengeItemList) {
             throw new Error('Challenge item list not found.');

@@ -172,6 +172,7 @@ export abstract class BaseModel<T extends BaseEntity> {
     payload: Omit<T, 'id' | 'created_at' | 'updated_at' | 'deleted_at'> = {} as any,
     trx?: Knex.Transaction
   ): Promise<T> {
+    
     let record = await this.findOne();
     if (record) return record;
 

@@ -8,8 +8,11 @@ export class HistoryService
     }
     static async updateHistory(video_id: string, payload: History)
     {
-        const history = await HistoryModel.findOne<History>({post_id: video_id});
-        
+        let history = await HistoryModel.findOne<History>({post_id: video_id});
+        if (history === undefined || history === null) {
+            await HistoryModel.create({post_id: video_id, last_comment_position: payload?.last_comment_position});
+            return;
+        }
         await HistoryModel.updateById<History>(history?.id, payload);
     }
     static async updateLastCommentPosition(id: string, num: number)

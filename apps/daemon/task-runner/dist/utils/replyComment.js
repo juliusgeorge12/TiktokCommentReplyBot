@@ -24,6 +24,7 @@ async function replyComment(Page, Setting, video_url) {
         if (comment?.emojis) {
             const emoji = comment.emojis;
             const emojis = emoji.split(/[\s,]+/).map(e => e.trim());
+            console.log(emojis);
             text += ' ' + (0, shuffle_1.shuffle)(emojis).join('');
         }
         if (lastUsedTextIndex < Comments.length - 1) {
@@ -50,6 +51,9 @@ async function replyComment(Page, Setting, video_url) {
         const match = text.match(/\d+/);
         return match ? parseInt(match[0], 10) : 0;
     });
+    if (commentCount < 1) {
+        return;
+    }
     const replyCount = Math.min(commentCount, MAX_COMMENTS);
     const findNextCommentcontainer = async (current) => {
         if (!current)
@@ -71,10 +75,11 @@ async function replyComment(Page, Setting, video_url) {
     const CommentListContainer = await Page.$('[class*="CommentListContainer"]');
     let commentContainer = await CommentListContainer.$('[class*="CommentObjectWrapper"], [class*="CommentItemContainer"]');
     let commentReplied = 0;
-    let replyText = getReplyText();
     while (commentReplied < replyCount && commentContainer) {
         await commentContainer.scrollIntoView();
+        const NextComment = await findNextCommentcontainer(commentContainer);
         if (!(commentReplied < lastCommentPosition)) {
+            const replyText = getReplyText();
             const ReplyBtn = await commentContainer.$('[role="button"][data-e2e="comment-reply-1"]');
             if (ReplyBtn) {
                 await ReplyBtn.click();
@@ -88,14 +93,14 @@ async function replyComment(Page, Setting, video_url) {
                         await Page.keyboard.press('Enter');
                         await core_1.HistoryService.updateLastCommentPosition(postId, commentReplied);
                     }
-                    commentReplied++;
                 }
                 else {
                     shared_1.logger.info('Reply box not found, retrying...');
                 }
             }
         }
-        commentContainer = await findNextCommentcontainer(commentContainer);
+        commentReplied++;
+        commentContainer = NextComment;
         await (0, shared_1.sleep)(DELAY_BETWEEN_REPLY * 1000);
     }
 }
