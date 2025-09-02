@@ -58,16 +58,10 @@ jobs:
 
       - name: Build for macOS
         run: npm run make-mac:all
-
-      - name: Upload task-runner artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: task-runner-mac
-          path: out/TiktokReplyBot-darwin-arm64/TiktokReplyBot.app/Contents/Resources/daemon/bin/task-runner-mac
-      
+        
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TiktokCommentReplyBot-mac-out
-          path: out
+          name: TiktokCommentReplyBot-mac-installer
+          path: out/make
       

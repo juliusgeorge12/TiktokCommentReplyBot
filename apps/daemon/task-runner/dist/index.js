@@ -63,10 +63,14 @@ async function startTaskRunnerLoop(interval = 60) {
                                 await (0, replyComment_1.replyComment)(Page, setting, video.link);
                             }
                             catch (error) {
-                                const banModal = await Page.$('div:has-text("Account banned")');
-                                if (banModal) {
+                                const banDetected = await Page.evaluate(() => {
+                                    const text = document.body.innerText.toLowerCase();
+                                    const keywords = ['account banned', 'suspended', 'violated our community guidelines'];
+                                    return keywords.some(keyword => text.includes(keyword));
+                                });
+                                if (banDetected) {
                                     core_1.ActivityService.addActivity({
-                                        description: 'Error commenting on video the bot account ' + Bot.name + ' has been banned',
+                                        description: `Error commenting on video: the bot account ${Bot.name} has been banned`,
                                         video_link: video.link,
                                         status: 'success'
                                     });

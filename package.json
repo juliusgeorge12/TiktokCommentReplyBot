@@ -1,7 +1,7 @@
 {
   "name": "TikTokRelpyBot",
   "productName": "TiktokReplyBot",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A bot that replies to comments on Tiktok posts.",
   "main": "apps/shell/dist/main.js",
   "scripts": {

@@ -11,10 +11,6 @@ export async function replyComment(Page: Page, Setting: Setting, video_url: stri
     const lastCommentPosition = (await HistoryService.getLastCommentPosition(postId ?? '')) ?? 0;
     const Comments = await CommentService.listComment();
     let lastUsedTextIndex = 0;
-    const splitEmojis = (str: string): string[] => {
-        const segmenter = new Intl.Segmenter("en", { granularity: "grapheme" });
-        return [...segmenter.segment(str)].map(seg => seg.segment);
-    };
     const getReplyText = (): string => { 
         const comment = Comments[lastUsedTextIndex];
         let text = comment?.text ?? '';
@@ -22,6 +18,7 @@ export async function replyComment(Page: Page, Setting: Setting, video_url: stri
         if (comment?.emojis) {
             const emoji = comment.emojis;
             const emojis = emoji.split(/[\s,]+/).map(e => e.trim());
+            console.log(emojis);
             text += ' ' + shuffle(emojis).join('');
         }
         if (lastUsedTextIndex < Comments.length - 1) {
@@ -47,6 +44,10 @@ export async function replyComment(Page: Page, Setting: Setting, video_url: stri
         const match = text.match(/\d+/);
         return match ? parseInt(match[0], 10) : 0;
     });
+    if (commentCount < 1) {
+        return;
+    }
+
     const replyCount = Math.min(commentCount, MAX_COMMENTS);
     const findNextCommentcontainer = async (current: ElementHandle<HTMLElement>): Promise<ElementHandle<HTMLDivElement> | null> => {
         if (!current) return null;
@@ -70,15 +71,15 @@ export async function replyComment(Page: Page, Setting: Setting, video_url: stri
       '[class*="CommentObjectWrapper"], [class*="CommentItemContainer"]'
     );
     let commentReplied = 0;
-    let replyText = getReplyText();
     while (commentReplied < replyCount && commentContainer) {
         await commentContainer.scrollIntoView();
+        const NextComment = await findNextCommentcontainer(commentContainer as ElementHandle<HTMLElement>);
         if (!(commentReplied < lastCommentPosition)) {
+            const replyText = getReplyText();
             const ReplyBtn = await commentContainer.$('[role="button"][data-e2e="comment-reply-1"]');
             if (ReplyBtn) {
                 await ReplyBtn.click();
                 await sleep(500);
-                
                 const replyBox = await CommentListContainer.$('[class*="DivCommentInputContainer"]');
                 if (replyBox) {
                     await replyBox.click();
@@ -88,13 +89,13 @@ export async function replyComment(Page: Page, Setting: Setting, video_url: stri
                         await Page.keyboard.press('Enter');
                         await HistoryService.updateLastCommentPosition(postId, commentReplied);
                     }
-                    commentReplied++;
                 } else {
                     logger.info('Reply box not found, retrying...');
                 }
             }
         }
-        commentContainer = await findNextCommentcontainer(commentContainer as ElementHandle<HTMLElement>);
+        commentReplied++;
+        commentContainer = NextComment;
         await sleep(DELAY_BETWEEN_REPLY * 1000);
     }
 }
